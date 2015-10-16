@@ -4,22 +4,30 @@ A dedicated Node.js worker for retrieving available Uber options given an origin
 
 ## Setup
 
+```
 git clone https://github.com/arosenberg01/Uber-Worker.git
-cd ...
+cd Uber-Worker
+```
 
 To use the tasks implementation:
 - [install RabbitMQ](https://www.rabbitmq.com/download.html)
 - start a local RabbitMQ instance with ```rabbitmq-server``` 
 
-node pull.js
-node push.js
+```
+node pull.js  
+node push.js  
+```
 
 ## Uses
 
-'main.js' exports ```javascript getUberOptions(origin, destination)```  
-The origin and destination arguments can each be either a string address (Ex: "401 Geneva Ave, San Francisco, CA 94112"), or an object with latitude and longitude coordinates (Ex: { longitude: -122.4088363, latitude: 37.7889758 })
+'main.js' exports ```getUberOptions(origin, destination)```, which retrieves available Uber options for a given start and end point. The origin and destination arguments can each be either a string address or an object with latitude and longitude coordinates. Ex:  
 
-Returns an array of available Uber options in the format:
+```javascript
+getUberOptions("401 Geneva Ave, San Francisco, CA 94112", { longitude: -122.4088363, latitude: 37.7889758 })
+```
+
+It returns  an array of available Uber options in the format:  
+
 ```javascript
 [
   {
@@ -49,36 +57,48 @@ Returns an array of available Uber options in the format:
 
 
 
-## Sample implementation
+## Sample Implementation
 
 'pull.js' and 'push.js' demonstrate a sample implementation utilizing RabbitMQ for task management.
 
+
+#### Enqueue Tasks
 
 ```javascript
 node push.js *input-file*
 ```
 
-If no file input is given, defaults to 'data/input.js'
+If no file input is given, it defaults to using 'data/input.js'
 
-Input file should be an array of JSON objects, where each object conforms to the requirements listed for getUberOptions.
-
-Ex:
+The nput file should be an array of JSON objects, where each object conforms to the requirements listed for getUberOptions. Ex:
 
 ```javascript
-{
-  "origin": "401 Geneva Ave, San Francisco, CA 94112",
-  "destination": {
-    "longitude": "-122.4088363",
-    "latitude": "37.7889758"
+[
+  {
+    "origin": "401 Geneva Ave, San Francisco, CA 94112",
+    "destination": {
+      "longitude": "-122.4088363",
+      "latitude": "37.7889758"
+    }
+  },
+
+  {
+    "origin": {
+      "longitude": "-122.4474918",
+      "latitude": "37.7214995"
+    },
+    "destination": {
+      "longitude": "-122.4088363",
+      "latitude": "37.7889758"
+    }
   }
-}
+]
 ```
 
 Each task has a time-stamped uuid attached and is stringified before being enqueued in the 'uber' queue.
 
 
-
-
+#### Dequeue Tasks
 
 ```javascript
 node pull.js *output-file*
