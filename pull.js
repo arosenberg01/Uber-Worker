@@ -1,23 +1,19 @@
-var broker = process.env.BROKER || 'amqp://localhost';
-var connection = process.env.CONNECTION || 'uber';
-
+var config = require('./config');
 var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require('fs'))
 var getEstimates = require('./worker/main');
-var context = require('rabbit.js').createContext(broker);
-
-// TODO
-var outputFile = process.argv[2] || 'data/output.js';
+var output = process.argv[2] || 'data/output.js';
+var context = require('rabbit.js').createContext(config.broker);
 
 context.on('ready', function() {
   var sub = context.socket('PULL');
   sub.setEncoding('utf8');
-  sub.connect(connection, function() {
+  sub.connect(config.connection, function() {
 
     sub.on('data', function(data) {
-      console.log('[x] message received');
+      console.log('[x] message: received');
       console.log(data);
-      addRoute(data, outputFile)
+      addRoute(data, output)
     });
 
   });

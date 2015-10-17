@@ -4,22 +4,15 @@ var rp = require('request-promise');
 var async = require('async');
 var moment = require('moment');
 var parseSeconds = require('./seconds.js');
+var uberToken = require('./../config').uberToken;
 var uberApiEndpoint = 'https://api.uber.com/v1/estimates/';
 
-// TODO = how to send credentials
-
-var uberToken = process.env.UBER_TOKEN || "BcFMxgIHLmgW-EtL64kD9oK1Ye6so8Iq2ESvBTK2";
-
 /**
- * Build urls to request time and price estimates for route from Uber API
- */
-
-/**
- * Build urls to request time and price estimates for route from Uber API
+ * Instantiate urls to request time and price estimates for route from Uber API
  * @param {Object} origin - Long and lat coordinates of origin: { longitude: '-122.449571', latitude: '37.7107389' }
  * @param {Object} destination - Long and lat coordinates of destination: { longitude: '-122.449571', latitude: '37.7107389' }
  */
-function UberEstimateUrls (origin, destination) {
+function uberEstimateUrls (origin, destination) {
 
   var timeEstimateParams = {
     server_token: uberToken,
@@ -35,10 +28,12 @@ function UberEstimateUrls (origin, destination) {
     end_latitude: destination.latitude
   };
 
-  this.urls = {
+  var urls = {
     timeEstimate: uberApiEndpoint + 'time?' + qs.stringify(timeEstimateParams),
     priceEstimate: uberApiEndpoint + 'price?' + qs.stringify(priceEstimateParams)
   };
+
+  return urls;
 };
 
 
@@ -90,11 +85,11 @@ function combineEstimates(estimates) {
 function getEstimates(origin, destination) {
   return new Promise(function(resolve, reject) {
     var uberResults = {};
-    var requestUrls = new UberEstimateUrls(origin, destination); 
+    var requestUrls = uberEstimateUrls(origin, destination); 
     async.parallel({ 
       // Retrieve price estimates
       priceEstimate: function(cb) {
-        rp(requestUrls.urls.priceEstimate)
+        rp(requestUrls.priceEstimate)
         .then(function(body) {
           var data = JSON.parse(body);
           data.prices.forEach(function(price) {
@@ -108,7 +103,7 @@ function getEstimates(origin, destination) {
       },
       // Retrive time estimates
       timeEstimate: function(cb) {
-        rp(requestUrls.urls.timeEstimate)
+        rp(requestUrls.timeEstimate)
         .then(function(body) {
           var data = JSON.parse(body);
           data.times.forEach(function(time) {

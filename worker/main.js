@@ -3,7 +3,6 @@ var async = require('async');
 var moment = require('moment');
 var _ = require('underscore');
 var Promise = require('bluebird');
-
 var getEstimates = require('./uber.js');
 
 /**

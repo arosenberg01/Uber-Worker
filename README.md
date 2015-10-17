@@ -13,6 +13,7 @@ To use the tasks implementation:
 - [install RabbitMQ](https://www.rabbitmq.com/download.html)
 - start a local RabbitMQ instance with ```rabbitmq-server``` 
 
+Using two separate bash processes:
 ```
 node pull.js  
 node push.js  
@@ -23,10 +24,11 @@ node push.js
 'main.js' exports ```getUberOptions(origin, destination)```, which retrieves available Uber options for a given start and end point. The origin and destination arguments can each be either a string address or an object with latitude and longitude coordinates. Ex:  
 
 ```javascript
-getUberOptions("401 Geneva Ave, San Francisco, CA 94112", { longitude: -122.4088363, latitude: 37.7889758 })
+getUberOptions("401 Geneva Ave, San Francisco, CA 94112",
+   { longitude: -122.4088363, latitude: 37.7889758 })
 ```
 
-It returns  an array of available Uber options in the format:  
+```getUberOptions``` returns  an array of available Uber options in the format:  
 
 ```javascript
 [
@@ -70,7 +72,7 @@ node push.js *input-file*
 
 If no file input is given, it defaults to using 'data/input.js'
 
-The nput file should be an array of JSON objects, where each object conforms to the requirements listed for getUberOptions. Ex:
+The input file should be an array tasks formatted as JSON objects, where each object conforms to the requirements listed for getUberOptions. Ex:
 
 ```javascript
 [
@@ -106,7 +108,7 @@ node pull.js *output-file*
 
 If no file input is given, defaults to 'data/output.js'
 
-Results of Uber route tasks (or an error message with the relevant timestamp) are appended to an output file
+Uber route tasks are dequeued from the 'uber' work queue, then have their results(or an error message with the corresponding uuid) appended to an output file.
 
 Ex:
 ```javascript

@@ -1,26 +1,24 @@
+var config = require('./config');
 var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require('fs'));
 var uuid = require('node-uuid');
-var context = require('rabbit.js').createContext('amqp://localhost');
-
-var connection = process.env.CONNECTION || 'uber';
-var jsonFile = process.argv[2] || 'data/input.js';
+var input = process.argv[2] || 'data/input.js';
+var context = require('rabbit.js').createContext(config.broker);
 var push;
 
 context.on('ready', function() {
   push = context.socket('PUSH');
-  push.connect(connection, function() {
-    pushRoutes(jsonFile);
+  push.connect(config.connection, function() {
+    pushRoutes(input);
   });
 });
 
 /**
- * [pushRoutes description]
- * @param  {[type]} jsonFile [description]
- * @return {[type]}          [description]
+ * Attempt to read file contains array of Uber route tasks and enqueue in worker queue with timestamped uuids.
+ * @param  {string} input - Name of file
  */
-function pushRoutes(jsonFile) {
-  fs.readFileAsync(jsonFile)
+function pushRoutes(input) {
+  fs.readFileAsync(input)
   .then(function(results) {
     try {
       var routes = JSON.parse(results);
@@ -28,9 +26,8 @@ function pushRoutes(jsonFile) {
       routes.forEach(function(route) {
         route.uuid = uuid.v1();
         var message = JSON.stringify(route);
-        console.log(message);
-        console.log('-------')
         push.write(message);
+        console.log('[x] message sent:', route.uuid);
       })
     } catch(err) {
       console.log('error:', err)
