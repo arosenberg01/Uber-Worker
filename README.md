@@ -71,9 +71,9 @@ getUberOptions("401 Geneva Ave, San Francisco, CA 94112",
 node push.js *input-file*
 ```
 
-If no file input is given, it defaults to using 'data/input.js'
+If no input file is given, it defaults to using 'data/input.js'
 
-The input file should be an array tasks formatted as JSON objects, where each object conforms to the requirements listed for getUberOptions. Ex:
+The input file should be an array of tasks formatted as JSON objects, where each object conforms to the requirements listed for ```getUberOptions```. Ex:
 
 ```javascript
 [
@@ -107,7 +107,7 @@ Each task has a time-stamped uuid attached and is stringified before being enque
 node pull.js *output-file*
 ```
 
-If no file input is given, defaults to 'data/output.js'
+If no output file is given, defaults to 'data/output.js'
 
 Uber route tasks are dequeued from the 'uber' work queue, then have their results (or an error message with the corresponding uuid) appended to an output file.
 
