@@ -57,7 +57,7 @@ function addRoute(locations, output) {
   })
   .catch(function(err){
     var invalid = JSON.stringify({"error": "invalid input", "uuid": payload.uuid}) + ',\n';
-    return fs.appendFileAsync('output.js', invalid)
+    return fs.appendFileAsync(output, invalid)
   })
   .catch(function(mistake) {
     console.error("Could not append error message:", mistake, " from task:", payload.uuid);

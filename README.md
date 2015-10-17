@@ -7,6 +7,7 @@ A dedicated Node.js worker for retrieving available Uber options given an origin
 ```
 git clone https://github.com/arosenberg01/Uber-Worker.git
 cd Uber-Worker
+npm install
 ```
 
 To use the tasks implementation:
@@ -108,7 +109,7 @@ node pull.js *output-file*
 
 If no file input is given, defaults to 'data/output.js'
 
-Uber route tasks are dequeued from the 'uber' work queue, then have their results(or an error message with the corresponding uuid) appended to an output file.
+Uber route tasks are dequeued from the 'uber' work queue, then have their results (or an error message with the corresponding uuid) appended to an output file.
 
 Ex:
 ```javascript
